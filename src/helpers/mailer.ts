@@ -1,29 +1,30 @@
 import User from "@/models/userModel";
 import bcryptjs from "bcryptjs";
-import nodeMailer from "nodemailer";
+import nodemailer from "nodemailer";
 
 export const sendEmail = async ({ email, emailType, userId }: any) => {
   try {
     const hashedToken = await bcryptjs.hash(userId.toString(), 10);
+    const base64EncodedToken = Buffer.from(hashedToken).toString("base64");
 
     if (emailType === "VERIFY") {
       await User.findByIdAndUpdate(userId, {
-        verifyToken: hashedToken,
+        verifyToken: base64EncodedToken,
         verifyTokenExpiry: Date.now() + 3600000,
       });
     } else if (emailType === "RESET") {
       await User.findByIdAndUpdate(userId, {
-        forgetPasswordToken: hashedToken,
+        forgetPasswordToken: base64EncodedToken,
         forgetPasswordTokenExpiry: Date.now() + 3600000,
       });
     }
 
-    const transport = nodeMailer.createTransport({
+    var transport = nodemailer.createTransport({
       host: "sandbox.smtp.mailtrap.io",
       port: 2525,
       auth: {
-        user: "",
-        pass: "",
+        user: process.env.MAIL_USERNAME,
+        pass: process.env.MAIL_PASSWORD,
       },
     });
 
@@ -33,8 +34,8 @@ export const sendEmail = async ({ email, emailType, userId }: any) => {
       subject:
         emailType === "VERIFY" ? "Verify your email" : "Reset your password",
       html: `<p> Click <a href="${
-        process.env.domain
-      }/verifyemail?token=${hashedToken}"> Here </a> to ${
+        process.env.DOMAIN
+      }/verifyemail?token=${base64EncodedToken}"> Here </a> to ${
         emailType === "VERIFY" ? "Verify your email" : "Reset your password</p>"
       } `,
     };
