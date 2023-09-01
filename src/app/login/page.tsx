@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { error } from "console";
 
 function Login() {
   const router = useRouter();
@@ -67,12 +66,23 @@ function Login() {
         }}
         placeholder="Password"
       />
-      <button
-        className="p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-gray-600"
-        onClick={onLogin}
-      >
-        {buttonDisabled ? "No login" : "Login"}
-      </button>
+      <div className="flex justify-between">
+        <button
+          className="p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-gray-600 bg-green-500 hover:bg-green-800 hover:text-white"
+          onClick={onLogin}
+        >
+          {buttonDisabled ? "No login" : "Login"}
+        </button>
+        <button
+          className="mx-2 p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-gray-600 bg-orange-500 hover:bg-orange-800 hover:text-white"
+          onClick={() => {
+            router.push("/forgetpassword");
+          }}
+        >
+          Forget Password
+        </button>
+      </div>
+
       <Link href="/signup">Visit Signup page</Link>
     </div>
   );
