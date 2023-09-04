@@ -16,6 +16,7 @@ export async function POST(request: NextRequest) {
       forgetPasswordTokenExpiry: { $gt: Date.now() },
     });
 
+    console.log(user);
     if (!user) {
       return NextResponse.json({ error: "Invalid token" }, { status: 400 });
     }
@@ -23,9 +24,9 @@ export async function POST(request: NextRequest) {
     const salt = await bcryptjs.genSalt(10);
     const hashedPassword = await bcryptjs.hash(password, salt);
 
+    user.passsword = hashedPassword;
     user.forgetPasswordToken = undefined;
     user.forgetPasswordTokenExpiry = undefined;
-    user.passsword = hashedPassword;
 
     await user.save();
 
@@ -34,6 +35,6 @@ export async function POST(request: NextRequest) {
       success: true,
     });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 400 });
+    return NextResponse.json({ error: error }, { status: 400 });
   }
 }

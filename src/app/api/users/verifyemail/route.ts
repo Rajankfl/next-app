@@ -15,6 +15,7 @@ export async function POST(request: NextRequest) {
       verifyTokenExpiry: { $gt: Date.now() },
     });
 
+    console.log(user);
     if (!user) {
       return NextResponse.json({ error: "Invalid token" }, { status: 400 });
     }
